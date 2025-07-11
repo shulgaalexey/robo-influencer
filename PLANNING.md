@@ -107,7 +107,7 @@ You are an intelligent AI coding agent operating in Plan/Act mode for the Robo I
 CRITICAL RULES:
 1. Always check PLANNING.md for project context, architecture, and constraints
 2. Always check TASK.md for current objectives and add new tasks as discovered
-3. Use venv_linux virtual environment for all Python operations
+3. Use .venv virtual environment for all Python operations (Windows)
 4. Never create files longer than 500 lines - refactor into modules instead
 5. Always create comprehensive tests for new features
 6. Follow the established architecture patterns and naming conventions
@@ -203,7 +203,7 @@ POST-IMPLEMENTATION:
 
 ### Required Tools
 
-- **Python 3.8+** with venv_linux virtual environment
+- **Python 3.8+** with .venv virtual environment (Windows)
 - **VS Code** with GitHub Copilot extension
 - **Git** for version control
 - **pytest** for testing
@@ -212,9 +212,9 @@ POST-IMPLEMENTATION:
 
 ### Environment Setup
 
-```bash
+```powershell
 # Activate virtual environment
-source venv_linux/bin/activate
+.\.venv\Scripts\Activate.ps1
 
 # Install dependencies
 pip install -r requirements.txt

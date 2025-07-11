@@ -41,12 +41,12 @@ Using PRPs/templates/prp_base.md as template:
 - list tasks to be completed to fullfill the PRP in the order they should be completed
 
 ### Validation Gates (Must be Executable) eg for python
-```bash
+```powershell
 # Syntax/Style
 ruff check --fix && mypy .
 
 # Unit Tests
-uv run pytest tests/ -v
+pytest tests/ -v
 
 ```
 
