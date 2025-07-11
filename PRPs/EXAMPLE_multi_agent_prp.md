@@ -41,22 +41,22 @@ A CLI-based application where:
 # MUST READ - Include these in your context window
 - url: https://ai.pydantic.dev/agents/
   why: Core agent creation patterns
-  
+
 - url: https://ai.pydantic.dev/multi-agent-applications/
   why: Multi-agent system patterns, especially agent-as-tool
-  
+
 - url: https://developers.google.com/gmail/api/guides/sending
   why: Gmail API authentication and draft creation
-  
+
 - url: https://api-dashboard.search.brave.com/app/documentation
   why: Brave Search API REST endpoints
-  
+
 - file: examples/agent/agent.py
   why: Pattern for agent creation, tool registration, dependencies
-  
+
 - file: examples/agent/providers.py
   why: Multi-provider LLM configuration pattern
-  
+
 - file: examples/cli.py
   why: CLI structure with streaming responses and tool visibility
 
@@ -228,7 +228,7 @@ async def search_brave(query: str, api_key: str, count: int = 10) -> List[BraveS
     async with httpx.AsyncClient() as client:
         headers = {"X-Subscription-Token": api_key}
         params = {"q": query, "count": count}
-        
+
         # GOTCHA: Brave API returns 401 if API key invalid
         response = await client.get(
             "https://api.search.brave.com/res/v1/web/search",
@@ -236,11 +236,11 @@ async def search_brave(query: str, api_key: str, count: int = 10) -> List[BraveS
             params=params,
             timeout=30.0  # CRITICAL: Set timeout to avoid hanging
         )
-        
+
         # PATTERN: Structured error handling
         if response.status_code != 200:
             raise BraveAPIError(f"API returned {response.status_code}")
-        
+
         # Parse and validate with Pydantic
         data = response.json()
         return [BraveSearchResult(**result) for result in data.get("web", {}).get("results", [])]
@@ -260,7 +260,7 @@ async def create_email_draft(
         deps=EmailAgentDeps(subject=subject),
         usage=ctx.usage  # PATTERN from multi-agent docs
     )
-    
+
     return f"Draft created with ID: {result.data}"
 ```
 
@@ -273,17 +273,17 @@ ENVIRONMENT:
       LLM_PROVIDER=openai
       LLM_API_KEY=sk-...
       LLM_MODEL=gpt-4
-      
+
       # Brave Search
       BRAVE_API_KEY=BSA...
-      
+
       # Gmail (path to credentials.json)
       GMAIL_CREDENTIALS_PATH=./credentials/credentials.json
-      
+
 CONFIG:
   - Gmail OAuth: First run opens browser for authorization
   - Token storage: ./credentials/token.json (auto-created)
-  
+
 DEPENDENCIES:
   - Update requirements.txt with:
     - google-api-python-client
@@ -294,7 +294,7 @@ DEPENDENCIES:
 ## Validation Loop
 
 ### Level 1: Syntax & Style
-```bash
+```powershell
 # Run these FIRST - fix any errors before proceeding
 ruff check . --fix              # Auto-fix style issues
 mypy .                          # Type checking
@@ -320,7 +320,7 @@ async def test_research_creates_email():
     )
     assert "draft_id" in result.data
 
-# test_email_agent.py  
+# test_email_agent.py
 def test_gmail_authentication(monkeypatch):
     """Test Gmail OAuth flow handling"""
     monkeypatch.setenv("GMAIL_CREDENTIALS_PATH", "test_creds.json")
@@ -336,7 +336,7 @@ async def test_create_draft():
     assert result.data.get("draft_id")
 ```
 
-```bash
+```powershell
 # Run tests iteratively until passing:
 pytest tests/ -v --cov=agents --cov=tools --cov-report=term-missing
 
@@ -344,7 +344,7 @@ pytest tests/ -v --cov=agents --cov=tools --cov-report=term-missing
 ```
 
 ### Level 3: Integration Test
-```bash
+```powershell
 # Test CLI interaction
 python cli.py
 
@@ -354,7 +354,7 @@ python cli.py
 # 🛠 Tools Used:
 #   1. brave_search (query='AI safety developments', limit=10)
 #
-# You: Create an email draft about this to john@example.com  
+# You: Create an email draft about this to john@example.com
 # 🤖 Assistant: [Creates draft]
 # 🛠 Tools Used:
 #   1. create_email_draft (recipient='john@example.com', ...)

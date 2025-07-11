@@ -34,11 +34,11 @@ Template optimized for AI agents to implement features with sufficient context a
 # MUST READ - Include these in your context window
 - url: [Official API docs URL]
   why: [Specific sections/methods you'll need]
-  
+
 - file: [path/to/example.py]
   why: [Pattern to follow, gotchas to avoid]
-  
-- doc: [Library documentation URL] 
+
+- doc: [Library documentation URL]
   section: [Specific section about common pitfalls]
   critical: [Key insight that prevents common errors]
 
@@ -47,7 +47,7 @@ Template optimized for AI agents to implement features with sufficient context a
 
 ```
 
-### Current Codebase tree (run `tree` in the root of the project) to get an overview of the codebase
+### Current Codebase tree (run `Get-ChildItem -Recurse -Name` in PowerShell to get an overview of the codebase)
 ```bash
 
 ```
@@ -62,7 +62,7 @@ Template optimized for AI agents to implement features with sufficient context a
 # CRITICAL: [Library name] requires [specific setup]
 # Example: FastAPI requires async functions for endpoints
 # Example: This ORM doesn't support batch inserts over 1000 records
-# Example: We use pydantic v2 and  
+# Example: We use pydantic v2 and
 ```
 
 ## Implementation Blueprint
@@ -71,7 +71,7 @@ Template optimized for AI agents to implement features with sufficient context a
 
 Create the core data models, we ensure type safety and consistency.
 ```python
-Examples: 
+Examples:
  - orm models
  - pydantic models
  - pydantic schemas
@@ -109,7 +109,7 @@ Task N:
 async def new_feature(param: str) -> Result:
     # PATTERN: Always validate input first (see src/validators.py)
     validated = validate_input(param)  # raises ValidationError
-    
+
     # GOTCHA: This library requires connection pooling
     async with get_connection() as conn:  # see src/db/pool.py
         # PATTERN: Use existing retry decorator
@@ -118,9 +118,9 @@ async def new_feature(param: str) -> Result:
             # CRITICAL: API returns 429 if >10 req/sec
             await rate_limiter.acquire()
             return await external_api.call(validated)
-        
+
         result = await _inner()
-    
+
     # PATTERN: Standardized response format
     return format_response(result)  # see src/utils/responses.py
 ```
@@ -130,20 +130,20 @@ async def new_feature(param: str) -> Result:
 DATABASE:
   - migration: "Add column 'feature_enabled' to users table"
   - index: "CREATE INDEX idx_feature_lookup ON users(feature_id)"
-  
+
 CONFIG:
   - add to: config/settings.py
   - pattern: "FEATURE_TIMEOUT = int(os.getenv('FEATURE_TIMEOUT', '30'))"
-  
+
 ROUTES:
-  - add to: src/api/routes.py  
+  - add to: src/api/routes.py
   - pattern: "router.include_router(feature_router, prefix='/feature')"
 ```
 
 ## Validation Loop
 
 ### Level 1: Syntax & Style
-```bash
+```powershell
 # Run these FIRST - fix any errors before proceeding
 ruff check src/new_feature.py --fix  # Auto-fix what's possible
 mypy src/new_feature.py              # Type checking
@@ -172,30 +172,31 @@ def test_external_api_timeout():
         assert "timeout" in result.message
 ```
 
-```bash
+```powershell
 # Run and iterate until passing:
-uv run pytest test_new_feature.py -v
+pytest test_new_feature.py -v
 # If failing: Read error, understand root cause, fix code, re-run (never mock to pass)
 ```
 
 ### Level 3: Integration Test
-```bash
+```powershell
 # Start the service
-uv run python -m src.main --dev
+python -m src.main --dev
 
-# Test the endpoint
-curl -X POST http://localhost:8000/feature \
-  -H "Content-Type: application/json" \
-  -d '{"param": "test_value"}'
+# Test the endpoint (using PowerShell's Invoke-RestMethod)
+Invoke-RestMethod -Uri "http://localhost:8000/feature" `
+  -Method POST `
+  -ContentType "application/json" `
+  -Body '{"param": "test_value"}'
 
 # Expected: {"status": "success", "data": {...}}
 # If error: Check logs at logs/app.log for stack trace
 ```
 
 ## Final validation Checklist
-- [ ] All tests pass: `uv run pytest tests/ -v`
-- [ ] No linting errors: `uv run ruff check src/`
-- [ ] No type errors: `uv run mypy src/`
+- [ ] All tests pass: `pytest tests/ -v`
+- [ ] No linting errors: `ruff check src/`
+- [ ] No type errors: `mypy src/`
 - [ ] Manual test successful: [specific curl/command]
 - [ ] Error cases handled gracefully
 - [ ] Logs are informative but not verbose
@@ -205,7 +206,7 @@ curl -X POST http://localhost:8000/feature \
 
 ## Anti-Patterns to Avoid
 - ❌ Don't create new patterns when existing ones work
-- ❌ Don't skip validation because "it should work"  
+- ❌ Don't skip validation because "it should work"
 - ❌ Don't ignore failing tests - fix them
 - ❌ Don't use sync functions in async context
 - ❌ Don't hardcode values that should be config
